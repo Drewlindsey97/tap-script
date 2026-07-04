@@ -1,3 +1,10 @@
 __pycache__/
 *.pyc
 .claude/settings.local.json
+
+# common Python project cruft, not currently present but worth guarding against
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.DS_Store
