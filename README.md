@@ -1,6 +1,43 @@
 # tap-script
 
-A tap/swipe automation bridge, plus a standalone FreeCell solver library.
+A tap/swipe automation bridge, a standalone FreeCell solver library, and a
+skin-aware OCR board reader + auto-player for Solitaire Stash.
+
+## Solitaire bot (`solitaire_auto_bot.py`, `board_reader_lib.py`, `skins/`)
+
+`board_reader_lib.py` reads the game board from a screenshot with OpenCV
+template matching. All skin-specific data lives under `skins/<name>/`:
+
+- `layout.json` - screen geometry (column x positions, slot row, card
+  stacking offsets, ...)
+- `templates/` - rank-corner glyph templates for buried face-up cards
+- `templates_last/` - larger templates for fully exposed cards and top slots
+
+Pick the skin with an environment variable (default `classic`):
+
+```
+SOLITAIRE_SKIN=purple python3 solitaire_auto_bot.py            # live device
+python3 solitaire_auto_bot.py --sim screenshot.png             # dry run
+```
+
+### Teaching it a new skin
+
+1. Collect a handful of gameplay screenshots (PNG, native resolution) of the
+   new skin: one right after a deal, a few mid-game with tall stacks and
+   occupied top slots.
+2. Calibrate the geometry:
+   `python3 tools/calibrate_layout.py shots/*.png --skin myskin --write`
+   (it prints anything it can't measure automatically and how to `--set` it).
+3. Extract labeled-by-position card crops:
+   `python3 tools/extract_templates.py shots/*.png --skin myskin`
+4. Look at each crop in `template_review/` and file it under its rank:
+   `python3 tools/cut_template.py --from-crop template_review/<crop>.png --label 6 --skin myskin`
+   One clean example per rank per template set is enough (13 corner + 13
+   exposed-card templates).
+5. Verify: `SOLITAIRE_SKIN=myskin python3 solitaire_auto_bot.py --sim shot.png`
+   and check the printed board against the screenshot.
+
+Requires `opencv-python` and `numpy`.
 
 ## Bridge (`bridge.py`, `tap_script.py`)
 
