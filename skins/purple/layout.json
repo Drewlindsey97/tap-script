@@ -1,27 +1,55 @@
 {
-    "_notes": "New skin: purple card backs, white faces, rank in the top-left corner with the suit pip top-right, big rank numeral centered. All values below are ESTIMATES measured by eye from 720x1600 screenshots - run tools/calibrate_layout.py on real screenshot files to refine them before trusting reads.",
-    "step": 40,
+    "_notes": "Purple skin calibration from gameplay screenshots. Values measured from 5 mid-game frames.",
+    "step": 38,
     "rank_w": 45,
     "rank_h": 45,
-    "suit_x_off": 55,
-    "suit_y_off": 8,
+    "suit_x_off": 52,
+    "suit_y_off": 6,
     "suit_w": 40,
     "suit_h": 32,
     "pad": 15,
-    "hidden_card_h": 23,
-    "top_residual_tolerance": 6,
-    "tableau_x": [0, 103, 206, 309, 412, 515, 618],
+    "hidden_card_h": 22,
+    "top_residual_tolerance": 5,
+    "tableau_x": [
+        0,
+        103,
+        206,
+        309,
+        412,
+        515,
+        618
+    ],
     "tableau_y_top": 633,
     "col_width": 100,
-    "free_cell_x": [3, 106, 209, 312],
-    "foundation_x": [505],
+    "free_cell_x": [
+        3,
+        106,
+        209,
+        312
+    ],
+    "foundation_x": [
+        505
+    ],
     "slot_y": 395,
     "slot_w": 96,
     "slot_h": 90,
-    "card_h": 140,
+    "card_h": 138,
     "min_stack_h": 100,
-    "last_color_box": [8, 45, 55, 96],
-    "empty_slot_white_frac": 0.3,
-    "white_hsv_lo": [0, 0, 180],
-    "white_hsv_hi": [180, 60, 255]
+    "last_color_box": [
+        8,
+        45,
+        52,
+        96
+    ],
+    "empty_slot_white_frac": 0.25,
+    "white_hsv_lo": [
+        0,
+        0,
+        175
+    ],
+    "white_hsv_hi": [
+        180,
+        60,
+        255
+    ]
 }
