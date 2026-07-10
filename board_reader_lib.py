@@ -66,6 +66,23 @@ EMPTY_SLOT_WHITE_FRAC = LAYOUT["empty_slot_white_frac"]
 WHITE_HSV_LO = np.array(LAYOUT["white_hsv_lo"])
 WHITE_HSV_HI = np.array(LAYOUT["white_hsv_hi"])
 
+# bottom edge of the tableau scan region; excludes UI chrome (e.g. white
+# footer buttons) that would otherwise read as huge card stacks. None means
+# scan to the bottom of the screenshot (classic-skin behavior).
+TABLEAU_Y_BOTTOM = LAYOUT.get("tableau_y_bottom")
+
+# Skins whose face-down cards are white-faced with a colored stripe (instead
+# of a fully colored back) can't use the white-mask top-offset trick to count
+# hidden cards - the white mask sees the face-down cards too. For those skins
+# set facedown_hsv_lo/hi to the stripe color and hidden cards are counted by
+# detecting the stripes directly.
+FACEDOWN_HSV_LO = np.array(LAYOUT["facedown_hsv_lo"]) if "facedown_hsv_lo" in LAYOUT else None
+FACEDOWN_HSV_HI = np.array(LAYOUT["facedown_hsv_hi"]) if "facedown_hsv_hi" in LAYOUT else None
+
+# a revealed span shorter than this holds no readable face-up card (the
+# column is empty or all face-down)
+MIN_REVEALED_H = LAYOUT.get("min_revealed_h", 60)
+
 
 def load_templates(folder):
     t = {}
@@ -129,7 +146,7 @@ def detect_column_height(img, x):
       of hidden cards - a sign of a mid-animation render rather than a real,
       stable hidden-card count
     """
-    col_slice = img[TABLEAU_Y_TOP:, x:x + COL_WIDTH]
+    col_slice = img[TABLEAU_Y_TOP:TABLEAU_Y_BOTTOM, x:x + COL_WIDTH]
     mask = white_mask(col_slice)
 
     kernel = np.ones((5, 5), np.uint8)
@@ -148,6 +165,30 @@ def detect_column_height(img, x):
 
     if min_y is None:
         return 0, 0, True
+
+    if FACEDOWN_HSV_LO is not None:
+        # count face-down cards by their colored stripes: one stripe band per
+        # face-down card, stacked at HIDDEN_CARD_H pitch from the column top
+        hsv = cv2.cvtColor(col_slice, cv2.COLOR_BGR2HSV)
+        fd = cv2.inRange(hsv, FACEDOWN_HSV_LO, FACEDOWN_HSV_HI)
+        rows = np.where(fd.sum(axis=1) > COL_WIDTH * 0.3 * 255)[0]
+        bands = []
+        prev = None
+        for r in rows:
+            if prev is None or r - prev > 3:
+                bands.append([r, r])
+            else:
+                bands[-1][1] = r
+            prev = r
+        bands = [b for b in bands if b[1] - b[0] >= 4]
+        hidden_count = len(bands)
+        # a stable stack has its stripes at a regular pitch starting at the
+        # column top; anything else is a mid-animation frame
+        reliable = all(
+            abs(b[0] - i * HIDDEN_CARD_H) <= TOP_RESIDUAL_TOLERANCE + 8
+            for i, b in enumerate(bands)
+        )
+        return max_y, hidden_count, reliable
 
     hidden_count = round(min_y / HIDDEN_CARD_H)
     residual = abs(min_y - hidden_count * HIDDEN_CARD_H)
@@ -170,6 +211,11 @@ def read_board(frame_path):
             continue
 
         revealed_span = height - hidden_count * HIDDEN_CARD_H
+        if hidden_count and revealed_span < MIN_REVEALED_H:
+            # only face-down cards in this column, nothing readable
+            col_cards.extend({"rank": "?", "color": "?", "score": 0.0} for _ in range(hidden_count))
+            board[f"col{col_idx}"] = col_cards
+            continue
         num_rows = round((revealed_span - CARD_H) / STEP) + 1
         num_rows = max(1, num_rows)
 

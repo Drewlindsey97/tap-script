@@ -37,6 +37,12 @@ python3 solitaire_auto_bot.py --sim screenshot.png             # dry run
 5. Verify: `SOLITAIRE_SKIN=myskin python3 solitaire_auto_bot.py --sim shot.png`
    and check the printed board against the screenshot.
 
+The bundled `purple` skin was calibrated this way and reads at ~99%
+accuracy on real captures. Its template set is verified for every rank
+except 3, which never appeared face-up in the calibration recording -
+when you see a 3 in play, screenshot it and file it with cut_template.py
+(both a corner and an exposed-card example).
+
 Requires `opencv-python` and `numpy`.
 
 ## Bridge (`bridge.py`, `tap_script.py`)

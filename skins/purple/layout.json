@@ -1,6 +1,6 @@
 {
-    "_notes": "Purple skin calibration from gameplay screenshots. Values measured from 5 mid-game frames.",
-    "step": 38,
+    "_notes": "Purple-back skin, calibrated pixel-exact from 25 real 720x1600 gameplay captures (see purple_shots). Face-down cards are white-faced with a purple stripe, so hidden cards are counted via facedown_hsv stripes; tableau_y_bottom excludes the white SUBMIT/SETTINGS/UNDO footer buttons from column scans.",
+    "step": 39,
     "rank_w": 45,
     "rank_h": 45,
     "suit_x_off": 52,
@@ -8,48 +8,24 @@
     "suit_w": 40,
     "suit_h": 32,
     "pad": 15,
-    "hidden_card_h": 22,
+    "hidden_card_h": 20,
     "top_residual_tolerance": 5,
-    "tableau_x": [
-        0,
-        103,
-        206,
-        309,
-        412,
-        515,
-        618
-    ],
-    "tableau_y_top": 633,
-    "col_width": 100,
-    "free_cell_x": [
-        3,
-        106,
-        209,
-        312
-    ],
-    "foundation_x": [
-        505
-    ],
-    "slot_y": 395,
-    "slot_w": 96,
+    "tableau_x": [0, 104, 208, 311, 414, 518, 621],
+    "tableau_y_top": 636,
+    "tableau_y_bottom": 1450,
+    "col_width": 98,
+    "free_cell_x": [0, 105, 208, 311],
+    "foundation_x": [502],
+    "slot_y": 394,
+    "slot_w": 97,
     "slot_h": 90,
-    "card_h": 138,
+    "card_h": 137,
     "min_stack_h": 100,
-    "last_color_box": [
-        8,
-        45,
-        52,
-        96
-    ],
+    "min_revealed_h": 60,
+    "last_color_box": [8, 45, 52, 96],
     "empty_slot_white_frac": 0.25,
-    "white_hsv_lo": [
-        0,
-        0,
-        175
-    ],
-    "white_hsv_hi": [
-        180,
-        60,
-        255
-    ]
+    "white_hsv_lo": [0, 0, 180],
+    "white_hsv_hi": [180, 60, 255],
+    "facedown_hsv_lo": [120, 80, 80],
+    "facedown_hsv_hi": [160, 255, 255]
 }
